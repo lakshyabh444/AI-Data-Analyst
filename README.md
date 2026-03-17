@@ -2,6 +2,9 @@
 
 An AI-powered data analysis application built with **Streamlit**, **Pandas**, **Plotly**, and the **Google Gemini API**. Upload a CSV dataset and let AI uncover key insights, trends, anomalies, and business recommendations.
 
+An AI-powered data analysis application built with **Streamlit**, **Pandas**, **Plotly**, and the **Google Gemini API**. Upload a CSV dataset and let AI uncover key insights, trends, anomalies, and business recommendations.
+
+🚀 **[View Live Demo](https://ai-data-analyst-dr83lgwke3wehef4m6z5rh.streamlit.app/)**
 ---
 
 ## ✨ Features
