@@ -121,6 +121,34 @@ AI_Data_Analyst/
 5. Enter your Gemini API key in the sidebar (if not set via `.env`).
 6. Click **"Generate AI Insights"** or use the **Chat** tab for interactive analysis.
 
+
+---
+
+## 🚀 Deployment to Render
+
+This application is ready to be deployed to **Render** as a Web Service.
+
+### Quick Setup (Recommended)
+
+1. **Push your code to GitHub.**
+2. **Create a new Blueprint Instance on Render:**
+   - Go to [dashboard.render.com](https://dashboard.render.com).
+   - Click **New +** and select **Blueprint**.
+   - Connect your GitHub repository.
+   - Render will automatically detect the `render.yaml` and set up the service.
+3. **Configure Environment Variables:**
+   - In the Render dashboard, go to your service's **Environment** tab.
+   - Add `GEMINI_API_KEY` and/or `GROQ_API_KEY`.
+4. **Wait for the build to complete.** Your app will be live at a `.onrender.com` URL!
+
+### Manual Setup (Alternative)
+
+If you prefer not to use Blueprints:
+1. Create a **New Web Service**.
+2. **Build Command:** `pip install -r requirements.txt`
+3. **Start Command:** `streamlit run app.py --server.port $PORT --server.address 0.0.0.0`
+4. **Environment Variables:** Add your API keys.
+
 ---
 
 ## 📝 License
