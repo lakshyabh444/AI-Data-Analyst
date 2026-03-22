@@ -10,7 +10,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from google import genai
+
 import os
 import time
 from dotenv import load_dotenv
@@ -143,49 +143,25 @@ with st.sidebar:
     st.header("⚙️ Configuration")
     st.markdown("---")
 
-    # Provider selection
-    provider = st.radio(
-        "AI Provider",
-        ["Gemini", "Groq"],
-        help="Choose Gemini (Google) or Groq (Meta/Mistral models). Groq usually has higher free rate limits.",
+    # Allow the user to input their Groq API key (or read from env)
+    api_key = st.text_input(
+        "Groq API Key",
+        type="password",
+        value=os.getenv("GROQ_API_KEY", ""),
+        help="Get your free key at https://console.groq.com/keys",
     )
 
-    if provider == "Gemini":
-        # Allow the user to input their Gemini API key (or read from env)
-        api_key = st.text_input(
-            "Gemini API Key",
-            type="password",
-            value=os.getenv("GEMINI_API_KEY", ""),
-            help="Enter your Google Gemini API key.",
-        )
-
-        # Model selection
-        model_choice = st.selectbox(
-            "Gemini Model",
-            ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro", "gemini-1.5-flash"],
-            index=0,
-            help="Select the Gemini model to use.",
-        )
-    else:
-        # Allow the user to input their Groq API key (or read from env)
-        api_key = st.text_input(
-            "Groq API Key",
-            type="password",
-            value=os.getenv("GROQ_API_KEY", ""),
-            help="Get your free key at https://console.groq.com/keys",
-        )
-
-        # Model selection
-        model_choice = st.selectbox(
-            "Groq Model",
-            ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it"],
-            index=0,
-            help="Select the Groq model to use.",
-        )
+    # Model selection
+    model_choice = st.selectbox(
+        "Groq Model",
+        ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it"],
+        index=0,
+        help="Select the Groq model to use.",
+    )
 
     st.markdown("---")
     st.markdown(
-        f"Built with ❤️ using **Streamlit**, **Pandas**, **Plotly**, and **{provider}**."
+        f"Built with ❤️ using **Streamlit**, **Pandas**, **Plotly**, and **Groq**."
     )
 
 
@@ -242,9 +218,6 @@ def build_dataset_summary(df: pd.DataFrame) -> str:
     return "\n".join(summary_parts)
 
 
-def get_gemini_client(api_key: str):
-    """Create and return a Gemini client."""
-    return genai.Client(api_key=api_key)
 
 
 def get_groq_client(api_key: str):
@@ -282,9 +255,9 @@ def call_with_retry(func, max_retries=3):
                 raise
 
 
-def get_ai_insights(summary: str, api_key: str, model: str, provider: str) -> str:
+def get_ai_insights(summary: str, api_key: str, model: str) -> str:
     """
-    Send the dataset summary to the selected API and return AI-generated insights.
+    Send the dataset summary to the Groq API and return AI-generated insights.
     """
     prompt = (
         "You are an expert data analyst. Below is a summary of a dataset. "
@@ -297,26 +270,19 @@ def get_ai_insights(summary: str, api_key: str, model: str, provider: str) -> st
         f"Here is the dataset summary:\n\n{summary}"
     )
 
-    if provider == "Gemini":
-        client = get_gemini_client(api_key)
-        def _call():
-            response = client.models.generate_content(model=model, contents=prompt)
-            return response.text
-        return call_with_retry(_call)
-    else:
-        client = get_groq_client(api_key)
-        def _call():
-            response = client.chat.completions.create(
-                messages=[{"role": "user", "content": prompt}],
-                model=model,
-            )
-            return response.choices[0].message.content
-        return call_with_retry(_call)
+    client = get_groq_client(api_key)
+    def _call():
+        response = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=model,
+        )
+        return response.choices[0].message.content
+    return call_with_retry(_call)
 
 
-def get_chat_response(chat_history: list, user_message: str, dataset_summary: str, api_key: str, model: str, provider: str) -> str:
+def get_chat_response(chat_history: list, user_message: str, dataset_summary: str, api_key: str, model: str) -> str:
     """
-    Send a chat conversation to the selected API and return the response.
+    Send a chat conversation to the Groq API and return the response.
     """
     system_instruction = (
         "You are an expert data analyst assistant. The user has uploaded a dataset. "
@@ -326,44 +292,19 @@ def get_chat_response(chat_history: list, user_message: str, dataset_summary: st
         "If a question cannot be answered from the available data, say so clearly."
     )
 
-    if provider == "Gemini":
-        client = get_gemini_client(api_key)
-        gemini_history = []
-        for msg in chat_history:
-            gemini_history.append(
-                types.Content(
-                    role=msg["role"],
-                    parts=[types.Part.from_text(text=msg["content"])],
-                )
-            )
-        
-        def _call():
-            response = client.models.generate_content(
-                model=model,
-                contents=gemini_history + [
-                    types.Content(
-                        role="user",
-                        parts=[types.Part.from_text(text=user_message)],
-                    )
-                ],
-                config=types.GenerateContentConfig(system_instruction=system_instruction),
-            )
-            return response.text
-        return call_with_retry(_call)
-    else:
-        client = get_groq_client(api_key)
-        messages = [{"role": "system", "content": system_instruction}]
-        for msg in chat_history:
-            messages.append({"role": msg["role"] if msg["role"] != "model" else "assistant", "content": msg["content"]})
-        messages.append({"role": "user", "content": user_message})
+    client = get_groq_client(api_key)
+    messages = [{"role": "system", "content": system_instruction}]
+    for msg in chat_history:
+        messages.append({"role": msg["role"] if msg["role"] != "model" else "assistant", "content": msg["content"]})
+    messages.append({"role": "user", "content": user_message})
 
-        def _call():
-            response = client.chat.completions.create(
-                messages=messages,
-                model=model,
-            )
-            return response.choices[0].message.content
-        return call_with_retry(_call)
+    def _call():
+        response = client.chat.completions.create(
+            messages=messages,
+            model=model,
+        )
+        return response.choices[0].message.content
+    return call_with_retry(_call)
 
 
 # ──────────────────────────────────────────────
@@ -681,14 +622,14 @@ if uploaded_file is not None:
 
         if not api_key:
             st.warning(
-                f"⚠️ Please enter your {provider} API key in the sidebar to generate AI insights."
+                f"⚠️ Please enter your Groq API key in the sidebar to generate AI insights."
             )
         else:
             if st.button("✨ Generate AI Insights", type="primary", use_container_width=True):
                 with st.spinner("Analyzing your data with AI..."):
                     try:
                         summary = build_dataset_summary(df)
-                        insights = get_ai_insights(summary, api_key, model_choice, provider)
+                        insights = get_ai_insights(summary, api_key, model_choice)
 
                         # Store insights in session state for download
                         st.session_state["last_insights"] = insights
@@ -757,7 +698,6 @@ if uploaded_file is not None:
                             dataset_summary,
                             api_key,
                             model_choice,
-                            provider,
                         )
 
                         # Add AI reply to history

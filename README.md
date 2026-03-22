@@ -1,10 +1,6 @@
 # 📊 AI Data Analyst
 
-An AI-powered data analysis application built with **Streamlit**, **Pandas**, **Plotly**, and the **Google Gemini API**. Upload a CSV dataset and let AI uncover key insights, trends, anomalies, and business recommendations.
-
-An AI-powered data analysis application built with **Streamlit**, **Pandas**, **Plotly**, and the **Google Gemini API**. Upload a CSV dataset and let AI uncover key insights, trends, anomalies, and business recommendations.
-
-🚀 **[View Live Demo](https://ai-data-analyst-dr83lgwke3wehef4m6z5rh.streamlit.app/)**
+An AI-powered data analysis application built with **Streamlit**, **Pandas**, **Plotly**, and **Groq**. Upload a CSV dataset and let AI uncover key insights, trends, anomalies, and business recommendations.
 ---
 
 ## ✨ Features
@@ -17,7 +13,7 @@ An AI-powered data analysis application built with **Streamlit**, **Pandas**, **
 - **Correlation Heatmap** – Visual correlation matrix with Pearson, Spearman, or Kendall methods and strong-correlation highlighting.
 - **Data Profiling** – Column-level profiling (types, nulls, unique values, min/max/mean/std) with categorical breakdowns and pie charts.
 - **Data Filtering** – Filter rows by column values or text search.
-- **AI-Powered Insights** – Send a dataset summary to Google Gemini and receive:
+- **AI-Powered Insights** – Send a dataset summary to Groq and receive:
   - Key Insights
   - Trends
   - Anomalies
@@ -32,7 +28,7 @@ An AI-powered data analysis application built with **Streamlit**, **Pandas**, **
 ### Prerequisites
 
 - Python 3.8 or higher
-- A Google Gemini API key ([get one here](https://aistudio.google.com/app/apikey))
+- A Groq API key ([get one here](https://console.groq.com/keys))
 
 ### Steps
 
@@ -57,25 +53,25 @@ An AI-powered data analysis application built with **Streamlit**, **Pandas**, **
 4. **Set up your API key**:
    ```bash
    cp .env.example .env
-   # Edit .env and add your Gemini API key
+   # Edit .env and add your Groq API key
    ```
 
 ---
 
 ## 🚀 How to Run
 
-1. **Set your Gemini API key** (choose one method):
+1. **Set your Groq API key** (choose one method):
 
    - **Option A – `.env` file** (recommended):
      ```
-     GEMINI_API_KEY=your-api-key-here
+     GROQ_API_KEY=your-api-key-here
      ```
 
    - **Option B – Environment variable:**
      ```bash
-     export GEMINI_API_KEY="your-api-key-here"       # macOS / Linux
-     set GEMINI_API_KEY=your-api-key-here             # Windows CMD
-     $env:GEMINI_API_KEY="your-api-key-here"          # Windows PowerShell
+     export GROQ_API_KEY="your-api-key-here"       # macOS / Linux
+     set GROQ_API_KEY=your-api-key-here             # Windows CMD
+     $env:GROQ_API_KEY="your-api-key-here"          # Windows PowerShell
      ```
 
    - **Option C – Enter it in the app sidebar** after launching.
@@ -118,7 +114,7 @@ AI_Data_Analyst/
    - **Data Profiling** – Column profiling, categorical breakdowns, data filtering
    - **AI Insights** – One-click AI analysis with downloadable report
    - **Chat with Data** – Conversational Q&A about your dataset
-5. Enter your Gemini API key in the sidebar (if not set via `.env`).
+5. Enter your Groq API key in the sidebar (if not set via `.env`).
 6. Click **"Generate AI Insights"** or use the **Chat** tab for interactive analysis.
 
 
@@ -138,7 +134,7 @@ This application is ready to be deployed to **Render** as a Web Service.
    - Render will automatically detect the `render.yaml` and set up the service.
 3. **Configure Environment Variables:**
    - In the Render dashboard, go to your service's **Environment** tab.
-   - Add `GEMINI_API_KEY` and/or `GROQ_API_KEY`.
+   - Add `GROQ_API_KEY`.
 4. **Wait for the build to complete.** Your app will be live at a `.onrender.com` URL!
 
 ### Manual Setup (Alternative)

@@ -8,7 +8,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0 # Or your preferred version
-      - key: GEMINI_API_KEY
-        sync: false # Set this in the Render dashboard
       - key: GROQ_API_KEY
         sync: false # Set this in the Render dashboard
