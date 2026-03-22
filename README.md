@@ -122,7 +122,7 @@ AI_Data_Analyst/
 
 ## 🚀 Deployment to Render
 
-This application is ready to be deployed to **Render** as a Web Service.
+This application is deployed to [Launch AI Data Analyst](https://ai-data-analyst-7rps.onrender.com/) as a Web Service.Open 
 
 ### Quick Setup (Recommended)
 
